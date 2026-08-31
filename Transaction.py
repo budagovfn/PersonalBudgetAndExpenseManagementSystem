@@ -1,10 +1,11 @@
 class Transaction:
-    def __init__(self, amount, currency, description, sender, addressee):
+    def __init__(self, amount, description, sender, addressee, date):
         self.__amount = amount
         self.__description = description
 
         self.__sender = sender
         self.__addressee = addressee
+        self.__date = date
 
     @property
     def amount(self):
@@ -21,5 +22,9 @@ class Transaction:
     @property
     def addressee(self):
         return self.__addressee
+
+    @property
+    def date(self):
+        return self.__date
 
 
