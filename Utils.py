@@ -14,6 +14,10 @@ DATA_DIR = os.path.join(GLOBAL_DIR, 'data')
 def create_budget_files(id: int, initial_amount: float) -> None:
     global DATA_DIR
     dir_path = os.path.join(DATA_DIR, str(id))
+
+    if os.path.exists(dir_path):
+        raise ValueError(f"User {id} already exists.")
+
     os.makedirs(dir_path, exist_ok=True)
     f_data = f"{id}_data.txt"
     f_transactions = f"{id}_transactions.csv"
