@@ -76,10 +76,13 @@ if '__main__' == __name__:
     my_budget = BudgetManager.create_account(id=5, initial_amount=1000.0)
 
     my_new_budget = BudgetManager.create_account(id=6, initial_amount=500.0)
-    print(my_new_budget.amount)
 
-    print(datetime.now().replace(microsecond=0))
-    my_new_budget.transfer(100, my_budget)
+    budget1 = BudgetManager.load_account(1)
+    budget2 = BudgetManager.load_account(2)
+
+    budget1.transfer(10, budget2)
+
+
 
 
 
