@@ -1,24 +1,27 @@
 from Transaction import Transaction
 from Utils import *
-
+from datetime import datetime
 
 class BudgetManager:
-    def __init__(self, id, amount, transactions):
+    def __init__(self, id, amount, transactions=[]):
         self.__id = id
         self.__amount = amount
         # maybe the password will be added here
-        self.__transactions = transactions
+        self.__transactions = transactions if transactions is not None else []
 
     @classmethod
     def create_account(cls, id: int, initial_amount: float) -> 'BudgetManager':
         """Creates a new account with file on the disk and an object in Python memory"""
         create_budget_files(id, initial_amount)
+
         return cls(id, initial_amount)
 
     @classmethod
-    def load_account(cls, id: int) -> 'BudgetManager':
+    def load_account(cls, id: int) -> "BudgetManager":
         """Loads an already registered account from disk"""
         amount = show_budget(id)
+        transactions = read_transactions(id)
+        return cls(id, amount, transactions)
 
 
 
@@ -43,7 +46,9 @@ class BudgetManager:
         self.__transactions = transactions
 
 
-    def transfer(self, amount: float, addressee: 'BudgetManager') -> 'Transaction':
+    def transfer(self, amount: float, addressee: 'BudgetManager', description=None) -> 'Transaction':
+        date_record = datetime.now().replace(microsecond=0)
+
         if amount <= 0:
             print('invalid amount.')
             return None
@@ -54,9 +59,29 @@ class BudgetManager:
         self.amount -= amount
         addressee.amount += amount
 
-        description = f"User {self.id} transfered to user {addressee.id} "
+        transaction = Transaction(amount, description, self.id, addressee.id, date_record)
+        self.__transactions.append(transaction)
 
-        return Transaction(amount, addressee)
+        addressee.transactions.append(transaction)
+
+        renew_budget_files(transaction)
+
+        add_new_transaction(transaction, self.id)
+        add_new_transaction(transaction, addressee.id)
+        return transaction
+
+
+
+if '__main__' == __name__:
+    my_budget = BudgetManager.create_account(id=5, initial_amount=1000.0)
+
+    my_new_budget = BudgetManager.create_account(id=6, initial_amount=500.0)
+    print(my_new_budget.amount)
+
+    print(datetime.now().replace(microsecond=0))
+    my_new_budget.transfer(100, my_budget)
+
+
 
 
 

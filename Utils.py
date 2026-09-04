@@ -81,7 +81,6 @@ def read_transactions(id: int) -> List[Transaction]:
             entry = line.strip()
             if not entry:
                 continue # skip empty stirngs
-            # TODO here something preprocesses the entry and returns it as several variables for transaction creation
             new_transaction = preprocess_line_to_transaction(entry)
             transactions.append(new_transaction)
     return transactions
@@ -95,7 +94,18 @@ def preprocess_line_to_transaction(line: str) -> Transaction:
     datetime, sender_id, addressee_id, amount, description = line.split(',')
     return Transaction(float(amount), description, sender_id, addressee_id, datetime)
 
+def preprocess_transaction_to_line(transaction: Transaction) -> str:
+    line = f"{transaction.date},{transaction.sender},{transaction.addressee},{transaction.amount},{transaction.description}"
+    return line
 
+def add_new_transaction(transaction: Transaction, id: int) -> Transaction:
+    global DATA_DIR
+    dir_path = os.path.join(DATA_DIR, str(id))
+    f_transactions = f"{id}_transactions.csv"
+
+    new_entry = preprocess_transaction_to_line(transaction)
+    with open(os.path.join(dir_path, f_transactions), 'a') as file:
+        file.write(f"{new_entry}\n")
 
 if __name__ == "__main__":
     create_budget_files(1, 130)

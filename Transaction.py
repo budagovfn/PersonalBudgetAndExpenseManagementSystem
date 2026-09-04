@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class Transaction:
     def __init__(self, amount, description, sender, addressee, date):
         self.__amount = amount
