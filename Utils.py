@@ -1,10 +1,10 @@
 '''
-THE STRUCTURE OF CSV FILE WITH TRANSACTIONS:
-| Datetime | ID of Addressee/Sender | Sent/Received | Amount (negative if sent) | Description |
-'''
+    NEW CSV STRUCTURE:
+    | Datetime | Sender ID | Addressee ID | Amount | Description |
+    '''
 
 import os
-
+from typing import List
 from Transaction import Transaction
 
 GLOBAL_DIR = os.path.dirname(__file__)
@@ -66,6 +66,35 @@ def update_budget(id: int, amount: float) -> None:
     f_data = f"{id}_data.txt"
     with open(os.path.join(dir_path, f_data), 'w') as file:
         file.write(f"funds: {amount}\n")
+
+def read_transactions(id: int) -> List[Transaction]:
+    global DATA_DIR
+    dir_path = os.path.join(DATA_DIR, str(id))
+    f_transactions = f"{id}_transactions.csv"
+    transactions = []
+
+    if not os.path.exists(dir_path):
+        raise ValueError(f"User {id} does not exist.")
+
+    with open(os.path.join(dir_path, f_transactions), 'r') as file:
+        for line in file:
+            entry = line.strip()
+            if not entry:
+                continue # skip empty stirngs
+            # TODO here something preprocesses the entry and returns it as several variables for transaction creation
+            new_transaction = preprocess_line_to_transaction(entry)
+            transactions.append(new_transaction)
+    return transactions
+
+
+def preprocess_line_to_transaction(line: str) -> Transaction:
+    '''
+    NEW CSV STRUCTURE:
+    | Datetime | Sender ID | Addressee ID | Amount | Description |
+    '''
+    datetime, sender_id, addressee_id, amount, description = line.split(',')
+    return Transaction(float(amount), description, sender_id, addressee_id, datetime)
+
 
 
 if __name__ == "__main__":

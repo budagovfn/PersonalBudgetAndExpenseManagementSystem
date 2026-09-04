@@ -1,4 +1,5 @@
 from Transaction import Transaction
+from Utils import *
 
 
 class BudgetManager:
@@ -7,6 +8,18 @@ class BudgetManager:
         self.__amount = amount
         # maybe the password will be added here
         self.__transactions = transactions
+
+    @classmethod
+    def create_account(cls, id: int, initial_amount: float) -> 'BudgetManager':
+        """Creates a new account with file on the disk and an object in Python memory"""
+        create_budget_files(id, initial_amount)
+        return cls(id, initial_amount)
+
+    @classmethod
+    def load_account(cls, id: int) -> 'BudgetManager':
+        """Loads an already registered account from disk"""
+        amount = show_budget(id)
+
 
 
     @property
